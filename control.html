@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Control Panel</title>
+</head>
+
+<body>
+
+<h2>Console</h2>
+<button onclick="updateData('PlayStation 2', currentGame)">PS2</button>
+<button onclick="updateData('GameCube', currentGame)">GameCube</button>
+
+<h2>Jeu</h2>
+<select onchange="setGame(this.value)">
+  <option>GTA San Andreas</option>
+  <option>Final Fantasy X</option>
+  <option>Burnout 3</option>
+</select>
+
+<script>
+let currentGame = "GTA San Andreas";
+
+function setGame(game) {
+  currentGame = game;
+}
+
+async function updateData(console, game) {
+
+  const token = "TON_TOKEN_GITHUB"; // à créer étape suivante
+
+  await fetch("https://api.github.com/repos/TON-USERNAME/overlay-stream/contents/data.json", {
+    method: "PUT",
+    headers: {
+      "Authorization": "token " + token,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "update overlay",
+      content: btoa(JSON.stringify({
+        console: console,
+        game: game
+      }, null, 2)),
+      sha: await getSHA()
+    })
+  });
+}
+
+async function getSHA() {
+  const res = await fetch("https://api.github.com/repos/TON-USERNAME/overlay-stream/contents/data.json");
+  const data = await res.json();
+  return data.sha;
+}
+</script>
+
+</body>
+</html>
