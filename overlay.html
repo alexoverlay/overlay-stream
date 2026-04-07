@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  background: transparent;
+  font-family: 'Press Start 2P', cursive;
+  color: white;
+}
+
+.box {
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+  background: rgba(0,0,0,0.7);
+  padding: 15px;
+  border: 3px solid white;
+}
+
+.console {
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.game {
+  font-size: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <div id="console" class="console"></div>
+  <div id="game" class="game"></div>
+</div>
+
+<script>
+async function loadData() {
+  const res = await fetch("https://raw.githubusercontent.com/TON-USERNAME/overlay-stream/main/data.json");
+  const data = await res.json();
+
+  document.getElementById("console").innerText = data.console;
+  document.getElementById("game").innerText = data.game;
+}
+
+setInterval(loadData, 2000);
+loadData();
+</script>
+
+</body>
+</html>
