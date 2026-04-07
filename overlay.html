@@ -2,125 +2,105 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Control Panel</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
-body {
-  font-family: Arial;
-  background: #111;
-  color: white;
-  padding: 20px;
+html, body {
+  margin: 0;
+  padding: 0;
+  background: rgba(0,0,0,0);
+  overflow: hidden;
+  font-family: 'Press Start 2P', cursive;
 }
 
-h2 {
-  margin-top: 20px;
+/* CONTENEUR */
+.box {
+  position: absolute;
+  bottom: 60px;
+  left: 60px;
+  padding: 20px 25px;
+  background: rgba(10, 10, 10, 0.6);
+  border: 2px solid #00ffff;
+  box-shadow:
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
+    inset 0 0 10px #00ffff;
+  backdrop-filter: blur(4px);
 }
 
-button {
-  margin: 5px;
-  padding: 10px 15px;
-  border: none;
-  cursor: pointer;
-  background: #222;
-  color: white;
-  border: 1px solid #555;
+/* CONSOLE */
+.console {
+  font-size: 14px;
+  color: #ff00ff;
+  text-shadow:
+    0 0 5px #ff00ff,
+    0 0 10px #ff00ff,
+    0 0 20px #ff00ff;
+  margin-bottom: 12px;
 }
 
-button:hover {
-  background: #444;
+/* JEU */
+.game {
+  font-size: 12px;
+  color: #00ffff;
+  text-shadow:
+    0 0 5px #00ffff,
+    0 0 10px #00ffff,
+    0 0 20px #00ffff;
 }
 
-select {
-  padding: 10px;
-  margin-top: 10px;
-  width: 250px;
+/* ANIMATION CLIGNOTEMENT */
+@keyframes flicker {
+  0% { opacity: 1; }
+  50% { opacity: 0.85; }
+  100% { opacity: 1; }
+}
+
+.box {
+  animation: flicker 2s infinite;
+}
+
+/* PETITS PIXELS DECOR */
+.pixel {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #00ffff;
+  box-shadow: 0 0 6px #00ffff;
+  animation: float 6s infinite linear;
+}
+
+@keyframes float {
+  from { transform: translateY(0); }
+  to { transform: translateY(-40px); opacity: 0; }
 }
 </style>
 </head>
 
 <body>
 
-<h2>🎮 Consoles</h2>
+<div class="box">
+  <div id="console" class="console"></div>
+  <div id="game" class="game"></div>
+</div>
 
-<button onclick="selectConsole('PlayStation')">PlayStation</button>
-<button onclick="selectConsole('PlayStation 2')">PS2</button>
-<button onclick="selectConsole('Dreamcast')">Dreamcast</button>
-<button onclick="selectConsole('GameCube')">GameCube</button>
-<button onclick="selectConsole('Super Nintendo')">SNES</button>
-<button onclick="selectConsole('Mega Drive')">Mega Drive</button>
-<button onclick="selectConsole('Nintendo 64')">N64</button>
-
-<h2>🎮 Jeux</h2>
-
-<select id="gameSelect" onchange="setGame(this.value)">
-</select>
+<!-- PIXELS ANIMÉS -->
+<div class="pixel" style="left: 100px; bottom: 20px;"></div>
+<div class="pixel" style="left: 140px; bottom: 10px;"></div>
+<div class="pixel" style="left: 180px; bottom: 30px;"></div>
 
 <script>
-let currentConsole = "PlayStation 2";
-let currentGame = "";
-
-// 🎮 Jeux par console
-const games = {
-  "PlayStation": ["Crash Bandicoot", "Final Fantasy VII", "Tekken 3"],
-  "PlayStation 2": ["GTA San Andreas", "Final Fantasy X", "Burnout 3"],
-  "Dreamcast": ["Shenmue", "Crazy Taxi", "Jet Set Radio"],
-  "GameCube": ["Mario Kart Double Dash", "Zelda Wind Waker", "Metroid Prime"],
-  "Super Nintendo": ["Super Mario World", "Zelda ALTTP", "Donkey Kong Country"],
-  "Mega Drive": ["Sonic", "Streets of Rage", "Golden Axe"],
-  "Nintendo 64": ["Mario 64", "Zelda Ocarina of Time", "GoldenEye 007"]
-};
-
-// 🔹 Quand tu choisis une console
-function selectConsole(console) {
-  currentConsole = console;
-
-  const select = document.getElementById("gameSelect");
-  select.innerHTML = "";
-
-  games[console].forEach(game => {
-    let option = document.createElement("option");
-    option.value = game;
-    option.text = game;
-    select.appendChild(option);
-  });
-
-  currentGame = games[console][0];
-  updateData();
-}
-
-// 🔹 Quand tu choisis un jeu
-function setGame(game) {
-  currentGame = game;
-  updateData();
-}
-
-// 🔹 Envoi vers GitHub
-async function updateData() {
-
-  const token = "COLLE_TON_TOKEN_ICI";
-
-  const res = await fetch("https://api.github.com/repos/alexoverlay/overlay-stream/contents/data.json");
+async function loadData() {
+  const res = await fetch("https://raw.githubusercontent.com/alexoverlay/overlay-stream/main/data.json");
   const data = await res.json();
 
-  await fetch("https://api.github.com/repos/alexoverlay/overlay-stream/contents/data.json", {
-    method: "PUT",
-    headers: {
-      "Authorization": "token " + token,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      message: "update overlay",
-      content: btoa(JSON.stringify({
-        console: currentConsole,
-        game: currentGame
-      }, null, 2)),
-      sha: data.sha
-    })
-  });
+  document.getElementById("console").innerText = data.console;
+  document.getElementById("game").innerText = data.game;
 }
 
-// 🔹 Init au chargement
-selectConsole(currentConsole);
+setInterval(loadData, 2000);
+loadData();
 </script>
 
 </body>
