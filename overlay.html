@@ -92,7 +92,10 @@ html, body {
 
 <script>
 async function loadData() {
-  const res = await fetch("https://raw.githubusercontent.com/alexoverlay/overlay-stream/main/data.json");
+
+  const url = "https://raw.githubusercontent.com/alexoverlay/overlay-stream/main/data.json?t=" + new Date().getTime();
+
+  const res = await fetch(url);
   const data = await res.json();
 
   document.getElementById("console").innerText = data.console;
